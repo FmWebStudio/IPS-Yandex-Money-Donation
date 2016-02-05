@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="Yandex Money Donation" version_long="10000" version_human="1.0.0" author="Fm Web (Recouse)" website="http://fm-web.studio" update_check=""><hooks/><settings><setting><key>yandexMoneyDonation_groups</key><default/></setting><setting><key>yandexMoneyDonation_blockTitle</key><default>Donation</default></setting><setting><key>yandexMoneyDonation_blockDesc</key><default>Donation for our site.</default></setting><setting><key>yandexMoneyDonation_inputPlaceholder</key><default>Enter the amount...</default></setting><setting><key>yandexMoneyDonation_buttonText</key><default>Donate</default></setting><setting><key>yandexMoneyDonation_redirectAdress</key><default/></setting><setting><key>yandexMoneyDonation_walletNumber</key><default/></setting><setting><key>yandexMoneyDonation_receiverName</key><default/></setting><setting><key>yandexMoneyDonation_paymentName</key><default>Donation</default></setting><setting><key>yandexMoneyDonation_paymentPurpose</key><default>Donation for project</default></setting><setting><key>yandexMoneyDonation_defaultAmount</key><default>100</default></setting><setting><key>yandexMoneyDonation_askTheName</key><default>1</default></setting><setting><key>yandexMoneyDonation_askEmail</key><default>1</default></setting><setting><key>yandexMoneyDonation_askPM</key><default>1</default></setting><setting><key>yandexMoneyDonation_askAdress</key><default>1</default></setting></settings><widgets><widget key="yandexMoneyDonationWidget" class="\IPS\Widget" restrict="sidebar,cms" default_area="sidebar" allow_reuse="" menu_style="modal" embeddable="1"><![CDATA[<?php
+/**
+ * @brief		yandexMoneyDonationWidget Widget
+ * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
+ * @copyright	(c) 2001 - 2016 Invision Power Services, Inc.
+ * @license		http://www.invisionpower.com/legal/standards/
+ * @package		IPS Community Suite
+ * @subpackage	yandexMoneyDonation
+ * @since		01 Feb 2016
+ * @version		SVN_VERSION_NUMBER
+ */
+
+namespace IPS\plugins\<{LOCATION}>\widgets;
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * yandexMoneyDonationWidget Widget
+ */
+class _yandexMoneyDonationWidget extends \IPS\Widget
+{
+	/**
+	 * @brief	Widget Key
+	 */
+	public $key = 'yandexMoneyDonationWidget';
+	
+	/**
+	 * @brief	App
+	 */
+	public $app = '';
+		
+	/**
+	 * @brief	Plugin
+	 */
+	public $plugin = '<{ID}>';
+	
+	/**
+	 * Initialise this widget
+	 *
+	 * @return void
+	 */ 
+	public function init()
+	{
+		$this->template( array( \IPS\Theme::i()->getTemplate( 'plugins', 'core', 'global' ), $this->key ) );
+		
+		
+		//parent::init();
+	}
+	
+	/**
+	 * Specify widget configuration
+	 *
+	 * @param	null|\IPS\Helpers\Form	$form	Form object
+	 * @return	null|\IPS\Helpers\Form
+	 */
+	public function configuration( &$form=null )
+	{
+ 		if ( $form === null )
+		{
+	 		$form = new \IPS\Helpers\Form;
+ 		}
+		
+		$form->addHtml('
+			<div class="ipsGrid">
+				<div class="ipsGrid_span9">
+		');
+		$form->addHeader('yandexMoneyDonation_permissions');
+		$form->add( new \IPS\Helpers\Form\Select( 'yandexMoneyDonation_groups', $this->configuration['yandexMoneyDonation_groups'] == 'all' ? 'all' : explode( ',', $this->configuration['yandexMoneyDonation_groups'] ), FALSE, array( 'options' => \IPS\Member\Group::groups(), 'parse' => 'normal', 'multiple' => true, 'unlimited' => 'all', 'unlimitedLang' => 'all_groups' ), NULL, NULL, NULL, 'yandexMoneyDonation_groups' ) );
+		$form->addHeader('yandexMoneyDonation_appearance');
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_blockTitle', $this->configuration['yandexMoneyDonation_blockTitle'], TRUE ) );
+		$form->add( new \IPS\Helpers\Form\TextArea( 'yandexMoneyDonation_blockDesc', $this->configuration['yandexMoneyDonation_blockDesc'], TRUE ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_inputPlaceholder', $this->configuration['yandexMoneyDonation_inputPlaceholder'], TRUE ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_buttonText', $this->configuration['yandexMoneyDonation_buttonText'], TRUE ) );
+		$form->addHeader('yandexMoneyDonation_receivingPayments');
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_redirectAdress', $this->configuration['yandexMoneyDonation_redirectAdress'], FALSE ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_walletNumber', $this->configuration['yandexMoneyDonation_walletNumber'], TRUE ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_receiverName', $this->configuration['yandexMoneyDonation_receiverName'], FALSE, array( 'maxLength' => 50 ) ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_paymentName', $this->configuration['yandexMoneyDonation_paymentName'], TRUE, array( 'maxLength' => 50 ) ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_paymentPurpose', $this->configuration['yandexMoneyDonation_paymentPurpose'], TRUE, array( 'maxLength' => 150 ) ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_defaultAmount', $this->configuration['yandexMoneyDonation_defaultAmount'], FALSE ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'yandexMoneyDonation_askTheName', $this->configuration['yandexMoneyDonation_askTheName'], FALSE ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'yandexMoneyDonation_askEmail', $this->configuration['yandexMoneyDonation_askEmail'], FALSE ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'yandexMoneyDonation_askPM', $this->configuration['yandexMoneyDonation_askPM'], FALSE ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'yandexMoneyDonation_askAdress', $this->configuration['yandexMoneyDonation_askAdress'], FALSE ) );
+		$form->addHtml('
+				</div>
+				<div class="yandexMoneyDonation_support ipsGrid_span3">
+					<h2 class="ipsFieldRow_section">Support</h2>
+					<div class="yandexMoneyDonation_supportInner ipsType_center">
+						<a target="_blank" class="ipsButton ipsButton_medium ipsButton_normal" href="http://fm-web.studio" rel="external nofollow">Site</a>
+						<a target="_blank" class="ipsButton ipsButton_medium ipsButton_normal" href="mailto:support@fm-web.studio" rel="external nofollow">Email</a>
+					</div>
+				</div>
+			</div>
+		');
+		
+ 		return $form;
+ 	}
+ 	
+ 	 /**
+ 	 * Ran before saving widget configuration
+ 	 *
+ 	 * @param	array	$values	Values from form
+ 	 * @return	array
+ 	 */
+ 	public function preConfig( $values )
+ 	{
+ 		return $values;
+ 	}
+
+	/**
+	 * Render a widget
+	 *
+	 * @return	string
+	 */
+	public function render()
+	{
+		return $this->output( $this->configuration );
+	}
+}]]></widget></widgets><htmlFiles><html filename="yandexMoneyDonationWidget.phtml">PGlwczp0ZW1wbGF0ZSBwYXJhbWV0ZXJzPSIkY29uZmlndXJhdGlvbiwgJG9yaWVudGF0aW9uPSd2ZXJ0aWNhbCciIC8+DQp7e2lmIFxJUFNcTWVtYmVyOjpsb2dnZWRJbigpLT5pbkdyb3VwKCAkY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl9ncm91cHMnXSwgVFJVRSApIHx8ICRjb25maWd1cmF0aW9uWyd5YW5kZXhNb25leURvbmF0aW9uX2dyb3VwcyddID09ICJhbGwifX0NCgk8aDMgY2xhc3M9J2lwc1dpZGdldF90aXRsZSBpcHNUeXBlX3Jlc2V0Jz57JGNvbmZpZ3VyYXRpb25bJ3lhbmRleE1vbmV5RG9uYXRpb25fYmxvY2tUaXRsZSddfTwvaDM+DQoJe3tpZiAkb3JpZW50YXRpb24gPT0gJ3ZlcnRpY2FsJ319DQoJCTxkaXYgY2xhc3M9J2lwc1BhZF9oYWxmIGlwc1dpZGdldF9pbm5lcic+DQoJCQk8ZGl2IGNsYXNzPSd5YW5kZXhNb25leURvbmF0aW9uX2Rlc2NyaXB0aW9uJz4NCgkJCQl7JGNvbmZpZ3VyYXRpb25bJ3lhbmRleE1vbmV5RG9uYXRpb25fYmxvY2tEZXNjJ119DQoJCQk8L2Rpdj4NCgkJCTxmb3JtIG1ldGhvZD0ncG9zdCcgYWN0aW9uPSdodHRwczovL21vbmV5LnlhbmRleC5ydS9xdWlja3BheS9jb25maXJtLnhtbCcgY2xhc3M9J2lwc0Zvcm0nPg0KCQkJCTxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J3JlZmVyZXInIHZhbHVlPSd7e2lmICRjb25maWd1cmF0aW9uWyd5YW5kZXhNb25leURvbmF0aW9uX3JlZGlyZWN0QWRyZXNzJ10gPT0gbnVsbH19e3NldHRpbmc9ImJhc2VfdXJsIn17e2Vsc2V9fXskY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl9yZWRpcmVjdEFkcmVzcyddfXt7ZW5kaWZ9fScgLz4NCgkJCQk8aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdyZWNlaXZlcicgdmFsdWU9J3skY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl93YWxsZXROdW1iZXInXX0nIC8+DQoJCQkJPGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nZm9ybWNvbW1lbnQnIHZhbHVlPSd7e2lmICRjb25maWd1cmF0aW9uWyd5YW5kZXhNb25leURvbmF0aW9uX3JlY2VpdmVyTmFtZSddID09IG51bGx9fXtzZXR0aW5nPSJib2FyZF9uYW1lIn17e2Vsc2V9fXskY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl9yZWNlaXZlck5hbWUnXX17e2VuZGlmfX0nIC8+DQoJCQkJPGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nc2hvcnQtZGVzdCcgdmFsdWU9J3skY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl9wYXltZW50TmFtZSddfScgLz4NCgkJCQk8aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdxdWlja3BheS1mb3JtJyB2YWx1ZT0nZG9uYXRlJyAvPg0KCQkJCTxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J3RhcmdldHMnIHZhbHVlPSd7JGNvbmZpZ3VyYXRpb25bJ3lhbmRleE1vbmV5RG9uYXRpb25fcGF5bWVudFB1cnBvc2UnXX0nIC8+DQoJCQkJPGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nd3JpdGFibGUtc3VtJyB2YWx1ZT0ndHJ1ZScgLz4NCgkJCQk8aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSduZWVkLWZpbycgdmFsdWU9J3t7aWYgJGNvbmZpZ3VyYXRpb25bJ3lhbmRleE1vbmV5RG9uYXRpb25fYXNrVGhlTmFtZSddfX10cnVle3tlbHNlfX1mYWxzZXt7ZW5kaWZ9fScgLz4NCgkJCQk8aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSduZWVkLWVtYWlsJyB2YWx1ZT0ne3tpZiAkY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl9hc2tFbWFpbCddfX10cnVle3tlbHNlfX1mYWxzZXt7ZW5kaWZ9fScgLz4NCgkJCQk8aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSduZWVkLXBob25lJyB2YWx1ZT0ne3tpZiAkY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl9hc2tQTSddfX10cnVle3tlbHNlfX1mYWxzZXt7ZW5kaWZ9fScgLz4NCgkJCQk8aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSduZWVkLWFkZHJlc3MnIHZhbHVlPSd7e2lmICRjb25maWd1cmF0aW9uWyd5YW5kZXhNb25leURvbmF0aW9uX2Fza0FkcmVzcyddfX10cnVle3tlbHNlfX1mYWxzZXt7ZW5kaWZ9fScgLz4NCgkJCQkNCgkJCQk8c3BhbiBjbGFzcz0neWFuZGV4TW9uZXlEb25hdGlvbl9mb3JtQm9keSBpcHNUeXBlX2NlbnRlcic+DQoJCQkJCTxzcGFuIGNsYXNzPSd5YW5kZXhNb25leURvbmF0aW9uX2Zvcm1UZXh0Jz4NCgkJCQkJCTxpbnB1dCB0eXBlPSdudW1iZXInIG5hbWU9J3N1bScgbWF4bGVuZ3RoPScxMCcgdmFsdWU9J3skY29uZmlndXJhdGlvblsneWFuZGV4TW9uZXlEb25hdGlvbl9kZWZhdWx0QW1vdW50J119JyBkYXRhLXR5cGU9J251bWJlcicgcGF0dGVybj0nXlsxLTldXGQqJCcgY2xhc3M9J2lucHV0X3RleHQgaW5wdXQnIHBsYWNlaG9sZGVyPSd7JGNvbmZpZ3VyYXRpb25bJ3lhbmRleE1vbmV5RG9uYXRpb25faW5wdXRQbGFjZWhvbGRlciddfScgcmVxdWlyZWQ9J3JlcXVpcmVkJyAvPg0KCQkJCQkJPHNwYW4gY2xhc3M9J3lhbmRleE1vbmV5RG9uYXRpb25fdmFsJz57bGFuZz0ieWFuZGV4TW9uZXlEb25hdGlvbl9ydWIifTwvc3Bhbj4NCgkJCQkJPC9zcGFuPg0KCQkJCQk8c3BhbiBjbGFzcz0neWFuZGV4TW9uZXlEb25hdGlvbl9mb3JtUmFkaW8nPg0KCQkJCQkJPGxhYmVsIGZvcj0neWFuZGV4TW9uZXlEb25hdGlvbl9wYXltZW50WWFuZGV4Jz4NCgkJCQkJCQk8aW5wdXQgdHlwZT0ncmFkaW8nIG5hbWU9J3BheW1lbnRUeXBlJyBjaGVja2VkPSdjaGVja2VkJyB2YWx1ZT0nUEMnIGlkPSd5YW5kZXhNb25leURvbmF0aW9uX3BheW1lbnRZYW5kZXgnIC8+IHtsYW5nPSJ5YW5kZXhNb25leURvbmF0aW9uX3BheVlhbmRleCJ9DQoJCQkJCQk8L2xhYmVsPg0KCQkJCQkJPGxhYmVsIGZvcj0neWFuZGV4TW9uZXlEb25hdGlvbl9wYXltZW50TW9iaWxlJz4NCgkJCQkJCQk8aW5wdXQgdHlwZT0ncmFkaW8nIG5hbWU9J3BheW1lbnRUeXBlJyB2YWx1ZT0nTUMnIGlkPSd5YW5kZXhNb25leURvbmF0aW9uX3BheW1lbnRNb2JpbGUnIC8+IHtsYW5nPSJ5YW5kZXhNb25leURvbmF0aW9uX3BheU1vYmlsZSJ9DQoJCQkJCQk8L2xhYmVsPg0KCQkJCQkJPGxhYmVsIGZvcj0neWFuZGV4TW9uZXlEb25hdGlvbl9wYXltZW50Q2FyZCc+DQoJCQkJCQkJPGlucHV0IHR5cGU9J3JhZGlvJyBuYW1lPSdwYXltZW50VHlwZScgdmFsdWU9J0FDJyBpZD0neWFuZGV4TW9uZXlEb25hdGlvbl9wYXltZW50Q2FyZCcgLz4ge2xhbmc9InlhbmRleE1vbmV5RG9uYXRpb25fcGF5Q2FyZCJ9DQoJCQkJCQk8L2xhYmVsPg0KCQkJCQk8L3NwYW4+DQoJCQkJCTxzcGFuIGNsYXNzPSd5YW5kZXhNb25leURvbmF0aW9uX2Zvcm1TdWJtaXQnPg0KCQkJCQkJPGJ1dHRvbiB0eXBlPSdzdWJtaXQnIG5hbWU9J3N1Ym1pdC1idXR0b24nIGNsYXNzPSdpcHNCdXR0b24gaXBzQnV0dG9uX3ZlcnlTbWFsbCBpcHNCdXR0b25fcHJpbWFyeSc+eyRjb25maWd1cmF0aW9uWyd5YW5kZXhNb25leURvbmF0aW9uX2J1dHRvblRleHQnXX08L2J1dHRvbj4NCgkJCQkJPC9zcGFuPg0KCQkJCTwvc3Bhbj4NCgkJCTwvZm9ybT4NCgkJPC9kaXY+DQoJe3tlbmRpZn19DQp7e2VuZGlmfX0=</html></htmlFiles><cssFiles><css filename="yandexMoneyDonation.css">LyoqDQoJKiBZYW5kZXggTW9uZXkgRG9uYXRpb24gV2lkZ2V0IFN0eWxlcw0KCSogRm0gV2ViIChSZWNvdXNlKQ0KCSogaHR0cDovL2ZtLXdlYi5zdHVkaW8NCiovDQoNCi8qIERlc2NyaXB0aW9uICovDQoueWFuZGV4TW9uZXlEb25hdGlvbl9kZXNjcmlwdGlvbiB7DQoJbWFyZ2luLWJvdHRvbTogMTBweDsNCn0NCg0KLyogRm9ybSAqLw0KLnlhbmRleE1vbmV5RG9uYXRpb25fZm9ybUJvZHkgKiB7DQogIGJveC1zaXppbmc6IGJvcmRlci1ib3g7DQp9DQoueWFuZGV4TW9uZXlEb25hdGlvbl9mb3JtVGV4dCB7DQoJZGlzcGxheTogdGFibGU7DQoJd2lkdGg6IDEwMCU7DQoJYm9yZGVyLWNvbGxhcHNlOiBzZXBhcmF0ZTsNCn0NCi55YW5kZXhNb25leURvbmF0aW9uX2Zvcm1UZXh0IGlucHV0IHsNCgltYXJnaW46IDA7DQoJaGVpZ2h0OiAzMnB4Ow0KCWJvcmRlcjogMXB4IHNvbGlkICNjY2M7DQoJYm9yZGVyLXJhZGl1czogM3B4IDAgMCAzcHggIWltcG9ydGFudDsNCgl0ZXh0LWFsaWduOiByaWdodDsNCglmb250LXNpemU6IDE2cHg7DQp9DQoueWFuZGV4TW9uZXlEb25hdGlvbl9mb3JtVGV4dCBpbnB1dCwgLnlhbmRleE1vbmV5RG9uYXRpb25fZm9ybVRleHQgLnlhbmRleE1vbmV5RG9uYXRpb25fdmFsIHsNCglkaXNwbGF5OiB0YWJsZS1jZWxsOw0KCXZlcnRpY2FsLWFsaWduOiBtaWRkbGU7DQp9DQoueWFuZGV4TW9uZXlEb25hdGlvbl9mb3JtVGV4dCAueWFuZGV4TW9uZXlEb25hdGlvbl92YWwgew0KCXBhZGRpbmc6IDRweDsNCglib3JkZXI6IDFweCBzb2xpZCAjY2NjOw0KCWJvcmRlci1sZWZ0OiBub25lOw0KCWJvcmRlci1yYWRpdXM6IDRweDsNCglib3JkZXItdG9wLWxlZnQtcmFkaXVzOiAwOw0KCWJvcmRlci1ib3R0b20tbGVmdC1yYWRpdXM6IDA7DQoJYmFja2dyb3VuZDogI2VlZTsNCgljb2xvcjogIzU1NTsNCn0NCi55YW5kZXhNb25leURvbmF0aW9uX2Zvcm1SYWRpbyB7DQoJZGlzcGxheTogYmxvY2s7DQoJbWFyZ2luOiAxMHB4IDA7DQp9DQoueWFuZGV4TW9uZXlEb25hdGlvbl9mb3JtUmFkaW8gbGFiZWwgew0KCWRpc3BsYXk6IGlubGluZS1ibG9jazsNCgltYXJnaW4tcmlnaHQ6IDRweDsNCglmb250LXNpemU6IDEycHggIWltcG9ydGFudDsNCn0NCi55YW5kZXhNb25leURvbmF0aW9uX2Zvcm1TdWJtaXQgew0KCW1hcmdpbi10b3A6IDIwcHg7DQogIGRpc3BsYXk6IGJsb2NrOw0KfQ0KDQovKiBTdXBwb3J0IGJsb2NrICovDQoueWFuZGV4TW9uZXlEb25hdGlvbl9zdXBwb3J0IC55YW5kZXhNb25leURvbmF0aW9uX3N1cHBvcnRJbm5lciB7DQoJcGFkZGluZzogMTBweDsNCn0NCi55YW5kZXhNb25leURvbmF0aW9uX3N1cHBvcnQgLnlhbmRleE1vbmV5RG9uYXRpb25fc3VwcG9ydElubmVyIGEgew0KCWRpc3BsYXk6IGlubGluZS1ibG9jazsNCn0NCi55YW5kZXhNb25leURvbmF0aW9uX3N1cHBvcnQgLnlhbmRleE1vbmV5RG9uYXRpb25fc3VwcG9ydElubmVyIGE6Zmlyc3QtY2hpbGQgew0KCW1hcmdpbi1yaWdodDogMTVweDsNCn0=</css></cssFiles><jsFiles/><resourcesFiles/><lang><word key="block_yandexMoneyDonationWidget" js="0">Yandex Money Donation</word><word key="block_yandexMoneyDonationWidget_desc" js="0">Yandex Money donation widget for your forum</word><word key="yandexMoneyDonation_permissions" js="0">Permissions</word><word key="yandexMoneyDonation_groups" js="0">Who can see?</word><word key="yandexMoneyDonation_appearance" js="0">Appearance</word><word key="yandexMoneyDonation_blockTitle" js="0">Block title</word><word key="yandexMoneyDonation_blockDesc" js="0">Block description</word><word key="yandexMoneyDonation_blockDesc_desc" js="0">Description for users.</word><word key="yandexMoneyDonation_inputPlaceholder" js="0">Hint</word><word key="yandexMoneyDonation_inputPlaceholder_desc" js="0">Placeholder for donation amount input.</word><word key="yandexMoneyDonation_buttonText" js="0">Button text</word><word key="yandexMoneyDonation_receivingPayments" js="0">Receiving Payments</word><word key="yandexMoneyDonation_redirectAdress" js="0">Redirect Adress</word><word key="yandexMoneyDonation_redirectAdress_desc" js="0">You can set the page of your site to redirect user after donating. If not set, default redirect to home of your site.</word><word key="yandexMoneyDonation_walletNumber" js="0">Wallet number</word><word key="yandexMoneyDonation_walletNumber_desc" js="0">Yandex account number to recieve donations.</word><word key="yandexMoneyDonation_receiverName" js="0">Receiver name</word><word key="yandexMoneyDonation_receiverName_desc" js="0">Receiver name for payment history. Max length 50 characters</word><word key="yandexMoneyDonation_paymentName" js="0">Payment name</word><word key="yandexMoneyDonation_paymentPurpose" js="0">Payment purpose</word><word key="yandexMoneyDonation_paymentPurpose_desc" js="0">Max length 150 characters</word><word key="yandexMoneyDonation_defaultAmount" js="0">Default amount</word><word key="yandexMoneyDonation_defaultAmount_desc" js="0">Default amount for donation form.</word><word key="yandexMoneyDonation_askTheName" js="0">Ask the name?</word><word key="yandexMoneyDonation_askEmail" js="0">Ask for email?</word><word key="yandexMoneyDonation_askPM" js="0">Ask for a phone number?</word><word key="yandexMoneyDonation_askAdress" js="0">Ask for the address?</word><word key="yandexMoneyDonation_rub" js="0">RUB</word><word key="yandexMoneyDonation_payYandex" js="0">Yandex.Money</word><word key="yandexMoneyDonation_payMobile" js="0">Mobile phone</word><word key="yandexMoneyDonation_payCard" js="0">Bank card</word></lang><versions><version long="10000" human="1.0.0"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * Install Code
+ */
+class ips_plugins_setup_install
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version></versions></plugin>
