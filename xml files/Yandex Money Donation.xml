@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin name="Yandex Money Donation" version_long="10000" version_human="1.0.0" author="Fm Web (Recouse)" website="http://fm-web.studio" update_check=""><hooks/><settings><setting><key>yandexMoneyDonation_groups</key><default/></setting><setting><key>yandexMoneyDonation_blockTitle</key><default>Donation</default></setting><setting><key>yandexMoneyDonation_blockDesc</key><default>Donation for our site.</default></setting><setting><key>yandexMoneyDonation_inputPlaceholder</key><default>Enter the amount...</default></setting><setting><key>yandexMoneyDonation_buttonText</key><default>Donate</default></setting><setting><key>yandexMoneyDonation_redirectAdress</key><default/></setting><setting><key>yandexMoneyDonation_walletNumber</key><default/></setting><setting><key>yandexMoneyDonation_receiverName</key><default/></setting><setting><key>yandexMoneyDonation_paymentName</key><default>Donation</default></setting><setting><key>yandexMoneyDonation_paymentPurpose</key><default>Donation for project</default></setting><setting><key>yandexMoneyDonation_defaultAmount</key><default>100</default></setting><setting><key>yandexMoneyDonation_askTheName</key><default>1</default></setting><setting><key>yandexMoneyDonation_askEmail</key><default>1</default></setting><setting><key>yandexMoneyDonation_askPM</key><default>1</default></setting><setting><key>yandexMoneyDonation_askAdress</key><default>1</default></setting></settings><widgets><widget key="yandexMoneyDonationWidget" class="\IPS\Widget" restrict="sidebar,cms" default_area="sidebar" allow_reuse="" menu_style="modal" embeddable="1"><![CDATA[<?php
+<plugin name="Yandex Money Donation" version_long="10010" version_human="1.0.1" author="Fm Web (Recouse)" website="http://fm-web.studio" update_check=""><hooks/><settings><setting><key>yandexMoneyDonation_groups</key><default/></setting><setting><key>yandexMoneyDonation_blockTitle</key><default>Donation</default></setting><setting><key>yandexMoneyDonation_blockDesc</key><default>Donation for our site.</default></setting><setting><key>yandexMoneyDonation_inputPlaceholder</key><default>Enter the amount...</default></setting><setting><key>yandexMoneyDonation_buttonText</key><default>Donate</default></setting><setting><key>yandexMoneyDonation_redirectAdress</key><default/></setting><setting><key>yandexMoneyDonation_walletNumber</key><default/></setting><setting><key>yandexMoneyDonation_receiverName</key><default/></setting><setting><key>yandexMoneyDonation_paymentName</key><default>Donation</default></setting><setting><key>yandexMoneyDonation_paymentPurpose</key><default>Donation for project</default></setting><setting><key>yandexMoneyDonation_defaultAmount</key><default>100</default></setting><setting><key>yandexMoneyDonation_askTheName</key><default>1</default></setting><setting><key>yandexMoneyDonation_askEmail</key><default>1</default></setting><setting><key>yandexMoneyDonation_askPM</key><default>1</default></setting><setting><key>yandexMoneyDonation_askAdress</key><default>1</default></setting></settings><widgets><widget key="yandexMoneyDonationWidget" class="\IPS\Widget" restrict="sidebar,cms" default_area="sidebar" allow_reuse="" menu_style="modal" embeddable="1"><![CDATA[<?php
 /**
  * @brief		yandexMoneyDonationWidget Widget
  * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
@@ -71,7 +71,7 @@ class _yandexMoneyDonationWidget extends \IPS\Widget
 				<div class="ipsGrid_span9">
 		');
 		$form->addHeader('yandexMoneyDonation_permissions');
-		$form->add( new \IPS\Helpers\Form\Select( 'yandexMoneyDonation_groups', $this->configuration['yandexMoneyDonation_groups'] == 'all' ? 'all' : explode( ',', $this->configuration['yandexMoneyDonation_groups'] ), FALSE, array( 'options' => \IPS\Member\Group::groups(), 'parse' => 'normal', 'multiple' => true, 'unlimited' => 'all', 'unlimitedLang' => 'all_groups' ), NULL, NULL, NULL, 'yandexMoneyDonation_groups' ) );
+		$form->add( new \IPS\Helpers\Form\Select( 'yandexMoneyDonation_groups', $this->configuration['yandexMoneyDonation_groups'] == 'all' ? 'all' : $this->configuration['yandexMoneyDonation_groups'], FALSE, array( 'options' => \IPS\Member\Group::groups(), 'parse' => 'normal', 'multiple' => true, 'unlimited' => 'all', 'unlimitedLang' => 'all_groups' ), NULL, NULL, NULL, 'yandexMoneyDonation_groups' ) );
 		$form->addHeader('yandexMoneyDonation_appearance');
 		$form->add( new \IPS\Helpers\Form\Text( 'yandexMoneyDonation_blockTitle', $this->configuration['yandexMoneyDonation_blockTitle'], TRUE ) );
 		$form->add( new \IPS\Helpers\Form\TextArea( 'yandexMoneyDonation_blockDesc', $this->configuration['yandexMoneyDonation_blockDesc'], TRUE ) );
@@ -137,6 +137,35 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  * Install Code
  */
 class ips_plugins_setup_install
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version><version long="10010" human="1.0.1"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * 1.0.1 Upgrade Code
+ */
+class ips_plugins_setup_upg_10010
 {
 	/**
 	 * ...
